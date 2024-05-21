@@ -29,8 +29,16 @@
           <h6 class="card-subtitle mb-2 text-body-secondary">{{ product.category|title }}</h6>
           <p class="card-text">{{ product.description }}</p>
           <p class="ca"></p>
-          <a class="btn btn-primary" href="{{ product.get_absolute_url }}">Details</a>
-          <a class="btn btn-primary" href="{{ product.get_absolute_url }}">Add to cart</a>
+          <div class="d-flex justify-content-between">
+          <a class="btn btn-link" href="{{ product.get_absolute_url }}">Details</a>
+            <form action="{% url 'catalog:cart-add' product.pk %}" method="post">
+              {% csrf_token %}
+              <input class="btn btn-glass" type="submit" value="+">
+              <input type="hidden" name="quantity" value="1">
+              <input type="hidden" name="redirect_url" value="{% url 'catalog:product_list' %}">
+            </form>
+          </div>
+          
         </div>
 
       </div>

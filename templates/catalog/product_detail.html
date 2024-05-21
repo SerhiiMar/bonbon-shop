@@ -1,11 +1,11 @@
 {% extends "base.html" %}
+{% load crispy_forms_filters %}
 {% load static %}
 
-{% block title %}
-  {{ product.name }}
-{% endblock %}
+{% block title %}{{ product.name }}{% endblock %}
 
 {% block content %}
+<h1>Product detail</h1>
   <div class="card mb-3 w-100">
     <div class="row g-0">
       <div class="col-md-8">
@@ -17,7 +17,12 @@
           <h6 class="card-subtitle mb-2 text-body-secondary">{{ product.category|title }}</h6>
           <p class="card-text">{{ product.description }}</p>
           <p class="card-text"><small class="text-body-secondary">Last updated: {{ product.updated }}</small></p>
-          <a class="btn btn-primary" href="{{ product.get_absolute_url }}">Add to cart</a>
+          <form class="d-flex justify-content-md-start" action="{% url 'catalog:cart-add' product.pk %}" method="post">
+            {% csrf_token %}
+            <input class="btn btn-glass p-3" type="submit" value="Add to cart">
+              {{ cart_product_form|crispy }}
+            <input type="hidden" name="redirect_url" value="{{ product.get_absolute_url }}">
+          </form>
         </div>
       </div>
       <div class="col-md-4">
