@@ -38,7 +38,7 @@
           <li class="nav-item">
             <a class="nav-link" href="#">Pricing</a>
           </li>
-        
+
           <!--#region cart link -->
           <li class="nav-item">
             {% with total_items=cart|length %}
@@ -55,8 +55,24 @@
 
             {% endwith %}
             <!--#endregion -->
-          
-          </li>
+            {% if user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" href="#">Welcome {{ user.username }}!</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+              </li>
+
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'accounts:register' %}">Register</a>
+              </li>
+            {% endif %}
+
+
 
         </ul>
       </div>
