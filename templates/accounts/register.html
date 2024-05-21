@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+  <div class="col-sm-10 col-lg-8 m-auto">
+    <h1>Register</h1>
+    <div class="card">
+      <div class="card-body">
+        <form action="" method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <div class="d-flex align-items-center justify-content-between">
+            <input class="btn btn-glass" type="submit" value="Register">
+            <div>
+            <p class="d-inline">Already have an account?</p>
+            <a href="{% url 'accounts:login' %}">Login</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

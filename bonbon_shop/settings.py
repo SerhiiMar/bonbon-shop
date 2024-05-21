@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     # user apps
     "catalog.apps.CatalogConfig",
+    "accounts.apps.AccountsConfig",
 ]
 
 MIDDLEWARE = [
@@ -114,6 +115,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "accounts.User"
+
+LOGIN_REDIRECT_URL = "catalog/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
