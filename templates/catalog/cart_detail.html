@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Cart{% endblock %}
+
+
+{% block content %}
+
+  <h1>Cart</h1>
+
+  {% for item in cart %}
+    {% with product=item.product %}
+
+      <div class="card mb-3 w-100">
+        <div class="row g-0">
+          <div class="col-md-10">
+            <div class="card-body h-100">
+              <div class="d-flex justify-content-between">
+                <h3 class="card-title">{{ product.name }} x {{ item.quantity }}</h3>
+                <h4 class="card-title">${{ product.price }}</h4>
+              </div>
+              <h6 class="card-subtitle mb-2 text-body-secondary">{{ product.category|title }}</h6>
+              {#              <p class="card-text">{{ product.description }}</p>#}
+              <div class="d-flex mb-3 position-absolute absolute-bottom width-100">
+                <div class="p-2">
+{#                  <a class="btn btn-glass" href="{{ product.get_absolute_url }}">Remove</a>#}
+                  <form action="{% url 'catalog:cart-remove' product.id %}" method="post">
+                    {% csrf_token %}
+                    <input class="btn btn-glass" type="submit" value="Remove">
+                    
+                  </form>
+                </div>
+                <div class="p-2">
+                  <a class="btn btn-glass" href="{{ product.get_absolute_url }}">Update</a>
+                </div>
+                <div class="p-2 ms-auto">
+                  <h4 class="card-title">Price: {{ item.total_price }}$</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 d-flex">
+            <img class="img-fluid w-100 m-1 align-self-center rounded"
+                 src="{% if product.image %}{{ product.image.url }}
+                  {% else %}{% static 'img/no_image.jpg' %}
+                  {% endif %}"  alt="product image">
+          </div>
+        </div>
+      </div>
+
+    {% endwith %}
+  {% endfor %}
+
+  <div class="card mb-3 w-100">
+    <div class="card-body">
+      
+      <h3 class="card-title">Total: {{ cart.get_total_price }}$</h3>
+      <a class="btn btn-success m-2" href="#">Checkout</a>
+      <a class="btn btn-glass" href="{% url 'catalog:product_list' %}">Continue shopping</a>
+
+    </div>
+  </div>
+
+{% endblock %}
