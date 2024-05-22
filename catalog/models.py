@@ -72,3 +72,33 @@ class OrderItem(models.Model):
 
     def get_cost(self):
         return self.price * self.quantity
+
+
+class Cart(models.Model):
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name="cart")
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    paid = models.BooleanField(default=False)
+    products = models.ManyToManyField(Product, through="CartItem", related_name="carts")
+
+    class Meta:
+        ordering = ("-created",)
+
+    def __str__(self):
+        return f"order {self.id}"
+
+    def get_total_cost(self):
+        return sum(item.get_cost() for item in self.items.all())
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="cart_items")
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    quantity = models.IntegerField(default=1)
+
+    def __str__(self):
+        return self.pk
+
+    def get_cost(self):
+        return self.price * self.quantity
