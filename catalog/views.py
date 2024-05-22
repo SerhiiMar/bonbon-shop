@@ -1,9 +1,14 @@
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.views import generic
 from django.views.decorators.http import require_POST
 
-from catalog.forms import CartAddProductForm
-from catalog.models import Category, Product
-from catalog.services.cart import Cart
+from catalog.forms import CartAddProductForm, LoginForm, RegistrationForm
+from catalog.models import Category, Product, Cart
+from catalog.services.anonymous_cart import AnonymousCart
 
 
 def product_list(request, category_slug=None):
@@ -29,9 +34,52 @@ def product_detail(request, pk, slug):
     return render(request, "catalog/product_detail.html", context=context)
 
 
+def login_view(request):
+    if request.user.is_authenticated:
+        messages.info(request, "You are already logged in")
+        return redirect("catalog:product_list")
+
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            print("is valid")
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            user = authenticate(request, username=username, password=password)
+            if not user:
+                messages.error(request, "Invalid login or password")
+
+                return redirect("catalog:login")
+
+            login(request, user)
+            print(request.session.get("cart"))
+            # request.session["cart"]
+            return redirect("catalog:product_list")
+        else:
+            print("not valid")
+            return render(request, "accounts/login.html", {"form": form})
+
+    form = LoginForm()
+    context = {"form": form}
+    return render(request, "accounts/login.html", context=context)
+
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect("catalog:product_list")
+
+
+class UserCreateView(generic.CreateView):
+    model = get_user_model()
+    form_class = RegistrationForm
+    template_name = "accounts/register.html"
+    success_url = reverse_lazy("catalog:login")
+
+
 @require_POST
 def cart_add(request, product_id):
-    cart = Cart(request)
+    cart = AnonymousCart(request)
     product = get_object_or_404(Product, pk=product_id, available=True)
     form = CartAddProductForm(request.POST)
     if form.is_valid():
@@ -44,13 +92,13 @@ def cart_add(request, product_id):
 
 @require_POST
 def cart_remove(request, product_id):
-    cart = Cart(request)
+    cart = AnonymousCart(request)
     product = get_object_or_404(Product, pk=product_id, available=True)
     cart.remove(product)
     return redirect("catalog:cart_detail")
 
 
 def cart_detail(request):
-    cart = Cart(request)
+    cart = AnonymousCart(request)
     context = {"cart": cart}
     return render(request, "catalog/cart_detail.html", context=context)

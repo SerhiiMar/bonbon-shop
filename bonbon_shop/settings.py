@@ -46,7 +46,6 @@ INSTALLED_APPS = [
 
     # user apps
     "catalog.apps.CatalogConfig",
-    "accounts.apps.AccountsConfig",
 ]
 
 MIDDLEWARE = [
@@ -115,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = "accounts.User"
+AUTH_USER_MODEL = "catalog.User"
 
 LOGIN_REDIRECT_URL = "catalog/"
 

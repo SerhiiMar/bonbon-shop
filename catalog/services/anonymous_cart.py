@@ -3,7 +3,7 @@ from django.conf import settings
 from catalog.models import Product
 
 
-class Cart:
+class AnonymousCart:
     def __init__(self, request):
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
@@ -40,8 +40,10 @@ class Cart:
         """
         product_id = str(product.id)
         if product_id not in self.cart:
-            self.cart[product_id] = {"quantity": 0,
-                                     "price": str(product.price)}
+            self.cart[product_id] = {
+                "quantity": 0,
+                "price": str(product.price)
+            }
         if override_quantity:
             self.cart[product_id]["quantity"] = quantity
         else:

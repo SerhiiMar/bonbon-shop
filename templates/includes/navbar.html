@@ -60,15 +60,15 @@
                 <a class="nav-link" href="#">Welcome {{ user.username }}!</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+                <a class="nav-link" href="{% url 'catalog:logout' %}">Logout</a>
               </li>
 
             {% else %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+                <a class="nav-link" href="{% url 'catalog:login' %}">Login</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'accounts:register' %}">Register</a>
+                <a class="nav-link" href="{% url 'catalog:register' %}">Register</a>
               </li>
             {% endif %}
 

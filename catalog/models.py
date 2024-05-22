@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
 
@@ -44,8 +44,16 @@ class Product(models.Model):
         return reverse("catalog:product_detail", args=[self.pk, self.slug])
 
 
+class User(AbstractUser):
+    city = models.CharField(max_length=100)
+    cart = models.OneToOneField("Cart", on_delete=models.CASCADE, null=True, blank=True, related_name="owner")
+
+    def __str__(self):
+        return f"{self.username} ({self.first_name} {self.last_name})"
+
+
 class Order(models.Model):
-    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="orders")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
@@ -75,7 +83,6 @@ class OrderItem(models.Model):
 
 
 class Cart(models.Model):
-    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name="cart")
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)

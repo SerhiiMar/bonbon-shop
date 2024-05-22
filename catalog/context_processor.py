@@ -1,5 +1,5 @@
-from catalog.services.cart import Cart
+from catalog.services.anonymous_cart import AnonymousCart
 
 
 def cart(request):
-    return {"cart": Cart(request)}
+    return {"cart": AnonymousCart(request)}
