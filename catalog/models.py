@@ -46,7 +46,7 @@ class Product(models.Model):
 
 class User(AbstractUser):
     city = models.CharField(max_length=100)
-    cart = models.OneToOneField("Cart", on_delete=models.CASCADE, null=True, blank=True, related_name="owner")
+    cart = models.OneToOneField("Cart", on_delete=models.SET_NULL, null=True, blank=True, related_name="owner")
 
     def __str__(self):
         return f"{self.username} ({self.first_name} {self.last_name})"
@@ -105,7 +105,7 @@ class CartItem(models.Model):
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
-        return self.pk
+        return self.product.name
 
     def get_cost(self):
         return self.price * self.quantity
