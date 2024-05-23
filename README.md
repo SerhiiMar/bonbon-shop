@@ -11,11 +11,12 @@ Project main tasks:
 - [x] Product detail view and template
 - [x] Cart service
 - [x] Accounts (login/logout views and templates)
-- [ ] Orders
-- [ ] Tests
+- [x] Tests
 - [ ] Deploy project
 
 Project secondary tasks:
+- [ ] Orders
+- [ ] Send email with order data
 - [ ] Cart models
 - [ ] Pagination
 - [ ] Search
@@ -28,4 +29,4 @@ Extra features:
 - [ ] Product constructor
 - [ ] Add form info messages
 - [ ] Add fullscreen picture view
-- [ ] Add 'read more' link
+- [ ] Add _read more_ link
