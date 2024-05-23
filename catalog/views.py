@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
@@ -7,7 +9,7 @@ from django.views import generic
 from django.views.decorators.http import require_POST
 
 from catalog.forms import CartAddProductForm, LoginForm, RegistrationForm
-from catalog.models import Category, Product, Cart
+from catalog.models import Category, Product, Cart, CartItem
 from catalog.services.anonymous_cart import AnonymousCart
 
 
@@ -52,8 +54,26 @@ def login_view(request):
                 return redirect("catalog:login")
 
             login(request, user)
-            print(request.session.get("cart"))
-            # request.session["cart"]
+            cart = AnonymousCart(request)
+
+            if not user.cart or not user.cart.items.all():
+                if not user.cart:
+                    user.cart = Cart.objects.create()
+                for product_id, item in cart.cart.items():
+                    product = Product.objects.get(pk=product_id)
+                    CartItem.objects.create(
+                        cart=user.cart,
+                        product=product,
+                        price=Decimal(item["price"]),
+                        quantity=item["quantity"],
+                    )
+                user.save()
+            else:
+                cart.clear()
+                cart = AnonymousCart(request)
+                for item in user.cart.items.all():
+                    cart.add(item.product, item.quantity)
+
             return redirect("catalog:product_list")
         else:
             print("not valid")
@@ -85,6 +105,25 @@ def cart_add(request, product_id):
     if form.is_valid():
         cart.add(product, form.cleaned_data["quantity"], form.cleaned_data["override"])
 
+    if request.user.is_authenticated:
+        if request.user.cart.items.filter(product=product).exists():
+            print("item exist")
+            cart_item = request.user.cart.items.get(product=product)
+            if form.cleaned_data["override"]:
+                cart_item.quantity = form.cleaned_data["quantity"]
+            else:
+                cart_item.quantity += form.cleaned_data["quantity"]
+            cart_item.save()
+            print(cart_item.quantity)
+        else:
+            print("create new item")
+            CartItem.objects.create(
+                cart=request.user.cart,
+                product=product,
+                price=product.price,
+                quantity=form.cleaned_data["quantity"],
+            )
+
     if form.cleaned_data["redirect_url"]:
         return redirect(form.cleaned_data["redirect_url"])
     return redirect("catalog:cart_detail")
@@ -95,6 +134,8 @@ def cart_remove(request, product_id):
     cart = AnonymousCart(request)
     product = get_object_or_404(Product, pk=product_id, available=True)
     cart.remove(product)
+    if request.user.is_authenticated:
+        request.user.cart.items.get(product=product).delete()
     return redirect("catalog:cart_detail")
 
 
