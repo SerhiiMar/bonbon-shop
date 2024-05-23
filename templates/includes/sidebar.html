@@ -1,0 +1,17 @@
+<div class="nav-container mb-4">
+<ul class="nav nav-pills flex-column">
+  <li class="nav-item">
+    <p class="nav-link disabled"><strong>Categories</strong></p>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if not category %}active{% endif %}" href="{% url 'catalog:product_list' %}">All</a>
+  </li>
+
+  {% for c in categories %}
+    <li class="nav-item">
+      <a class="nav-link {% if category.slug == c.slug %}active{% endif %}"
+         href="{{ c.get_absolute_url }}">{{ c.name|title }}</a>
+    </li>
+  {% endfor %}
+</ul>
+</div>

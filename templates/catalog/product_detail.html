@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+  <h1>Product detail</h1>
+  <div class="card mb-3 w-100">
+    <div class="row g-0">
+      <div class="col-md-8">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <h1 class="card-title">{{ product.name }}</h1>
+            <h2 class="card-title">${{ product.price }}</h2>
+          </div>
+          <h6 class="card-subtitle mb-2 text-body-secondary">{{ product.category|title }}</h6>
+          <p class="card-text">{{ product.description }}</p>
+          <p class="card-text"><small class="text-body-secondary">Last updated: {{ product.updated }}</small></p>
+          <form class="w-25" action="{% url 'catalog:cart-add' product.pk %}" method="post">
+            {% csrf_token %}
+            {{ cart_product_form|crispy }}
+            <div>
+              <label for="override">Override?</label>
+              <input id="override" type="checkbox" name="override" value="override">
+            </div>
+            <br>
+            <input class="btn btn-glass" type="submit" value="Add to cart">
+            <input type="hidden" name="redirect_url" value="{{ product.get_absolute_url }}">
+          </form>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <img src="{% if product.image %}{{ product.image.url }}
+                  {% else %}{% static 'img/no_image.jpg' %}
+                  {% endif %}" class="img-fluid rounded-start" alt="...">
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
