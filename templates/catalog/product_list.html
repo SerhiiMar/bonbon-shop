@@ -33,9 +33,9 @@
           <a class="btn btn-link" href="{{ product.get_absolute_url }}">Details</a>
             <form action="{% url 'catalog:cart-add' product.pk %}" method="post">
               {% csrf_token %}
-              <input class="btn btn-glass" type="submit" value="+">
+              <input class="btn btn-glass" type="submit" value="Add to cart">
               <input type="hidden" name="quantity" value="1">
-              <input type="hidden" name="redirect_url" value="{% url 'catalog:product_list' %}">
+              <input type="hidden" name="redirect_url" value="{% url 'catalog:cart_detail' %}">
             </form>
           </div>
           
